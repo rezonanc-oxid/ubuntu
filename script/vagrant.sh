@@ -13,8 +13,8 @@ if [ "$INSTALL_VAGRANT_KEY" = "true" ] || [ "$INSTALL_VAGRANT_KEY" = "1" ]; then
     # Create Vagrant user (if not already present)
     if ! id -u $SSH_USER >/dev/null 2>&1; then
         echo "==> Creating $SSH_USER user"
-        /usr/sbin/groupadd $SSH_USER
-        /usr/sbin/useradd $SSH_USER -g $SSH_USER -G sudo -d $SSH_USER_HOME --create-home
+        /usr/sbin/groupadd -g $SSH_GID $SSH_USER
+        /usr/sbin/useradd $SSH_USER -g $SSH_USER -G sudo -d $SSH_USER_HOME -u $SSH_UID --create-home
         echo "${SSH_USER}:${SSH_PASS}" | chpasswd
     fi
 
@@ -38,3 +38,7 @@ if [ "$INSTALL_VAGRANT_KEY" = "true" ] || [ "$INSTALL_VAGRANT_KEY" = "1" ]; then
     chmod 600 $SSH_USER_HOME/.ssh/authorized_keys
     chown -R $SSH_USER:$SSH_USER $SSH_USER_HOME/.ssh
 fi
+
+groupdel dialout
+groupmod -g $SSH_GID $SSH_USER
+
